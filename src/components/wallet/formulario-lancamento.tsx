@@ -45,6 +45,28 @@ export function FormularioLancamento({ onRegistrar }: Props) {
     setForm(estadoInicial);
   }
 
+  // Formata valor como moeda brasileira
+  function formatarValor(valor: string): string {
+    // Remove tudo que não é dígito
+    const apenasNumeros = valor.replace(/\D/g, "");
+    
+    // Se vazio, retorna vazio
+    if (!apenasNumeros) return "";
+    
+    // Converte para número e formata (ex: 12345 → "123,45")
+    const numeroFormatado = (parseInt(apenasNumeros, 10) / 100)
+      .toLocaleString("pt-BR", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      });
+    
+    return numeroFormatado;
+  }
+
+  function limpar() {
+    setForm(estadoInicial);
+  }
+
   function registrar(e: React.FormEvent) {
     e.preventDefault();
 
@@ -98,32 +120,32 @@ export function FormularioLancamento({ onRegistrar }: Props) {
         Criar lançamento
       </h2>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
         {/* Valor */}
         <div>
           <label className={labelCls}>Valor (R$)</label>
           <input
             type="text"
-            inputMode="decimal"
+            inputMode="numeric"
             placeholder="0,00"
             value={form.valor}
-            onChange={(e) => set("valor", e.target.value)}
-            className={inputCls}
+            onChange={(e) => set("valor", formatarValor(e.target.value))}
+            className={`${inputCls}`}
           />
         </div>
 
-        {/* Método de pagamento */}
+        {/* Categoria */}
         <div>
-          <label className={labelCls}>Método de pagamento</label>
+          <label className={labelCls}>Categoria</label>
           <select
-            value={form.metodoPagamento}
-            onChange={(e) => set("metodoPagamento", e.target.value)}
-            className={inputCls}
+            value={form.categoria}
+            onChange={(e) => set("categoria", e.target.value)}
+            className={`${inputCls}`}
           >
             <option value="">Selecionar...</option>
-            {METODOS_PAGAMENTO.map((m) => (
-              <option key={m} value={m}>
-                {m}
+            {CATEGORIAS.map((c) => (
+              <option key={c} value={c}>
+                {c}
               </option>
             ))}
           </select>
@@ -137,48 +159,48 @@ export function FormularioLancamento({ onRegistrar }: Props) {
             placeholder="Ex: Bar do Zé"
             value={form.estabelecimento}
             onChange={(e) => set("estabelecimento", e.target.value)}
-            className={inputCls}
+            className={`${inputCls}`}
           />
         </div>
 
-        {/* Categoria */}
+        {/* Método de pagamento */}
         <div>
-          <label className={labelCls}>Categoria</label>
+          <label className={labelCls}>Método de pagamento</label>
           <select
-            value={form.categoria}
-            onChange={(e) => set("categoria", e.target.value)}
-            className={inputCls}
+            value={form.metodoPagamento}
+            onChange={(e) => set("metodoPagamento", e.target.value)}
+            className={`${inputCls}`}
           >
             <option value="">Selecionar...</option>
-            {CATEGORIAS.map((c) => (
-              <option key={c} value={c}>
-                {c}
+            {METODOS_PAGAMENTO.map((m) => (
+              <option key={m} value={m}>
+                {m}
               </option>
             ))}
           </select>
         </div>
 
-        {/* Data + Hora (lado a lado) */}
-        <div className="grid grid-cols-2 gap-3">
-          <div>
+          {/* Data + Hora (lado a lado) */}
+          <div className="flex gap-1 min-w-0">
+            <div className="flex-[1.3]  min-w-0">
             <label className={labelCls}>Data</label>
-            <input
-              type="date"
-              value={form.data}
-              onChange={(e) => set("data", e.target.value)}
-              className={inputCls}
-            />
-          </div>
-          <div>
+              <input
+                type="date"
+                value={form.data}
+                onChange={(e) => set("data", e.target.value)}
+                className={`${inputCls} w-full`}
+              />
+            </div>
+            <div className="flex-1 min-w-0">
             <label className={labelCls}>Hora</label>
             <input
               type="time"
               value={form.hora}
               onChange={(e) => set("hora", e.target.value)}
-              className={inputCls}
+              className={`${inputCls} w-full`}
             />
+            </div>
           </div>
-        </div>
 
         {/* Descrição */}
         <div>
@@ -188,7 +210,7 @@ export function FormularioLancamento({ onRegistrar }: Props) {
             placeholder="Opcional"
             value={form.descricao}
             onChange={(e) => set("descricao", e.target.value)}
-            className={inputCls}
+            className={`${inputCls}`}
           />
         </div>
 
@@ -198,7 +220,7 @@ export function FormularioLancamento({ onRegistrar }: Props) {
           <select
             value={form.parcelas}
             onChange={(e) => set("parcelas", e.target.value)}
-            className={inputCls}
+            className={`${inputCls}`}
           >
             <option value="1">À vista</option>
             {[2, 3, 4, 5, 6, 10, 12, 18, 24].map((n) => (
@@ -215,7 +237,7 @@ export function FormularioLancamento({ onRegistrar }: Props) {
           <select
             value={form.recorrencia}
             onChange={(e) => set("recorrencia", e.target.value)}
-            className={inputCls}
+            className={`${inputCls}`}
           >
             {RECORRENCIAS.map((r) => (
               <option key={r} value={r}>
